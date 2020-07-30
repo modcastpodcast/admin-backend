@@ -1,0 +1,48 @@
+name: Docker
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  push_docker_image:
+    name: Build & Publish Docker image
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build Docker image
+        run: docker build . --file Dockerfile -t modcastpodcast/link-shortener-backend/backend:${{ github.sha }}
+
+      - name: Publish Docker image
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: modcastpodcast/link-shortener-backend/backend:${{ github.sha }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+
+  deploy_to_kubernetes:
+    name: Deploy to Kubernetes
+    runs-on: ubuntu-latest
+    needs: [push_docker_image]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: Azure/k8s-set-context@v1
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBECONFIG }}
+
+      - uses: Azure/k8s-deploy@v1
+        with:
+          namespace: 'default'
+          manifests: |
+            deployment.yaml
+          images: 'docker.pkg.github.com/modcastpodcast/link-shortener-backend/backend:${{ github.sha }}'
+          imagepullsecrets: |
+            githubpackage
+          kubectl-version: 'latest'
