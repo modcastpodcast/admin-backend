@@ -1,5 +1,8 @@
 FROM python:latest
 
+WORKDIR /app
+COPY . .
+
 ENV FLASK_APP=app.py
 
 RUN pip install -r requirements.txt
