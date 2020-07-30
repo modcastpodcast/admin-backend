@@ -20,3 +20,15 @@ spec:
           envFrom:
             - secretRef:
                 name: modcast-link-shortener-backend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: modcast-link-shortener-backend
+spec:
+  selector:
+    app: modcast-link-shortener-backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
