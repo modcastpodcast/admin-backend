@@ -7,4 +7,4 @@ ENV FLASK_APP=app.py
 
 RUN pip install -r requirements.txt
 
-CMD ["sh", "-c", "flask db upgrade && gunicorn --workers 2 --access-logfile - app:app"]
+CMD ["sh", "-c", "flask db upgrade && gunicorn --bind 0.0.0.0:80 --workers 2 --access-logfile - app:app"]
