@@ -4,3 +4,5 @@ alembic
 gunicorn
 flask_migrate
 psycopg2
+Werkzeug
+SQLAlchemy

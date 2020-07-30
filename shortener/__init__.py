@@ -3,6 +3,7 @@ from os import environ
 from flask import Flask, redirect
 from werkzeug.exceptions import NotFound
 
+from shortener.blueprints.api import api
 from shortener.models import db, ShortURL
 
 
@@ -11,6 +12,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = environ.get("DATABASE_URL")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 db.init_app(app)
+
+app.register_blueprint(api, url_prefix="/api")
 
 
 @app.route("/")
