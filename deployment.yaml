@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: modcast-link-shortener-backend
+spec:
+  revisionHistoryLimit: 2
+  replicas: 1
+  selector:
+    matchLabels:
+      app: modcast-link-shortener-backend
+  template:
+    metadata:
+      labels:
+        app: modcast-link-shortener-backend
+    spec:
+      containers:
+        - name: modcast-link-shortener-backend
+          image: docker.pkg.github.com/modcastpodcast/link-shortener-backend/backend
+          imagePullPolicy: "IfNotPresent"
+          envFrom:
+            - secretRef:
+                name: modcast-link-shortener-backend

@@ -1,0 +1,6 @@
+flask
+flask_sqlalchemy
+alembic
+gunicorn
+flask_migrate
+psycopg2
