@@ -14,8 +14,8 @@ API_BASE = "https://discord.com/api/v7"
 
 ADMIN_FRONTEND = environ.get("LINK_SHORTENER_ADMIN")
 
-CLIENT_ID = environ.get("OAUTH2_CLIENT_ID")
-CLIENT_SECRET = environ.get("OAUTH2_CLIENT_SECRET")
+CLIENT_ID = environ.get("CLIENT_ID")
+CLIENT_SECRET = environ.get("CLIENT_SECRET")
 
 if uri := environ.get("OAUTH2_REDIRECT_URI"):
     REDIRECT_URI = uri
