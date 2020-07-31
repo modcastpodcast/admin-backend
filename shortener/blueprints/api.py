@@ -12,8 +12,8 @@ def is_authorized(f):
     @wraps(f)
     def check_auth(*args, **kwargs):
         if auth := request.headers.get("Authorization"):
-            g.api_key = auth
-            if k := APIKey.query.filter_by(key=auth).first():
+            if key := APIKey.query.filter_by(key=auth).first():
+                g.api_key = key
                 return f(*args, **kwargs)
             else:
                 return jsonify({
