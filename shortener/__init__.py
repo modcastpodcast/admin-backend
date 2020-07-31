@@ -1,7 +1,8 @@
 import secrets
 from os import environ
 
-from flask import Flask, redirect
+from crawlerdetect import CrawlerDetect
+from flask import Flask, redirect, request
 from werkzeug.exceptions import NotFound
 
 from shortener.blueprints.api import api
@@ -19,6 +20,8 @@ db.init_app(app)
 app.register_blueprint(api, url_prefix="/api")
 app.register_blueprint(oauth2, url_prefix="/oauth2")
 
+crawler = CrawlerDetect()
+
 
 @app.route("/")
 def index():
@@ -28,8 +31,9 @@ def index():
 @app.route("/<string:code>")
 def short_redirect(code):
     if link := ShortURL.query.filter_by(short_code=code).first():
-        link.clicks += 1
-        db.session.commit()
+        if not crawler.isCrawler(request.headers.get("User-Agent")):
+            link.clicks += 1
+            db.session.commit()
         return redirect(link.long_url)
     else:
         return NotFound("The requested short code could not be found")
