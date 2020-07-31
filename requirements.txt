@@ -6,3 +6,4 @@ flask_migrate
 psycopg2
 Werkzeug
 SQLAlchemy
+httpx
