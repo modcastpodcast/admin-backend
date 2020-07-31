@@ -1,6 +1,6 @@
 from functools import wraps
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, g, jsonify, request
 from sqlalchemy.exc import IntegrityError
 
 from shortener.models import db, APIKey, ShortURL
@@ -12,6 +12,7 @@ def is_authorized(f):
     @wraps(f)
     def check_auth(*args, **kwargs):
         if auth := request.headers.get("Authorization"):
+            g.api_key = auth
             if k := APIKey.query.filter_by(key=auth).first():
                 return f(*args, **kwargs)
             else:
@@ -58,11 +59,18 @@ def create():
     """
     data = request.get_json()
 
-    new_url = ShortURL(
-        short_code=data["short_code"],
-        long_url=data["long_url"],
-        creator=data["creator"]
-    )
+    if not g.api_key.creator:
+        new_url = ShortURL(
+            short_code=data["short_code"],
+            long_url=data["long_url"],
+            creator=data["creator"]
+        )
+    else:
+        new_url = ShortURL(
+            short_code=data["short_code"],
+            long_url=data["long_url"],
+            creator=g.api_key.creator
+        )
 
     db.session.add(new_url)
 

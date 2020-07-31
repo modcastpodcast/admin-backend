@@ -24,3 +24,7 @@ class APIKey(db.Model):
 
     # Administrators can create and delete API keys
     is_admin = db.Column(db.Boolean, primary_key=True, default=False)
+
+    # Optionally API keys can be registered to users for the frontend portal
+    # If an API key does not have a creator attached then the key is valid for any user
+    creator = db.Column(db.BigInteger, nullable=True)
