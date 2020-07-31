@@ -47,6 +47,8 @@ def oauth2_callback():
     if session.get("token", "a") != request.args["state"]:
         raise BadRequest("Invalid OAuth2 state returned")
 
+    del session["token"]
+
     data = {
         "client_id": CLIENT_ID,
         "client_secret": CLIENT_SECRET,
