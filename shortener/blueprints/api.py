@@ -59,7 +59,7 @@ def create():
     """
     data = request.get_json()
 
-    if not g.api_key.creator:
+    if not g.api_key.creator or (g.api_key.is_admin and data.get("creator")):
         new_url = ShortURL(
             short_code=data["short_code"],
             long_url=data["long_url"],
