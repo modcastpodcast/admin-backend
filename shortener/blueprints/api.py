@@ -68,6 +68,17 @@ def is_authorized(f):
 
     return check_auth
 
+def is_admin(f):
+    @wraps(f)
+    def check_admin(*args, **kwargs):
+        if g.api_key.is_admin:
+            return f(*args, **kwargs)
+        else:
+            return jsonify({
+                "status": "error",
+                "message": "You are not an administrator"
+            }), 403
+
 
 def is_json(f):
     @wraps(f)
@@ -214,3 +225,22 @@ def get_user_by_id(user_id):
         return get_user(user_id)
     except ValueError:
         raise BadRequest()
+
+@api.route("/admin/tokens")
+@is_authorized
+@is_admin
+def get_all_tokens():
+    keys = APIKey.query.all()
+
+    keys_json = []
+
+    for key in keys:
+        data = key.__dict__
+
+        data.pop("_sa_instance_state")
+
+        data["creator"] = str(data["creator"])
+
+        keys_json.append(data)
+
+    return jsonify(keys_json)
