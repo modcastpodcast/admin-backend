@@ -28,7 +28,7 @@ def upstream_get_user(user_id):
         raise RateLimitException(RATELIMITS["users"]["reset_after"])
 
     user = httpx.get(f"{DISCORD_API_BASE}/users/{user_id}", headers={
-        "Authorization:" f"Bot {DISCORD_API_TOKEN}"
+        "Authorization": f"Bot {DISCORD_API_TOKEN}"
     })
 
     RATELIMITS["users"]["reset_after"] = user.headers["x-ratelimit-reset-after"]
