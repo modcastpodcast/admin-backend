@@ -180,6 +180,8 @@ def all_links():
 
         data.pop("_sa_instance_state")
 
+        data["creator"] = str(data["creator"])
+
         data["creation_date"] = data["creation_date"].timestamp()
 
         links_json.append(data)
