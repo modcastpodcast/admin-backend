@@ -16,7 +16,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = environ.get("DATABASE_URL")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SECRET_KEY'] = secrets.token_hex(64)
 CORS(app, resources={
-    r"/api/*": {"origins": "https://admin.modpod.live"}
+    r"/api/*": {"origins": ["https://admin.modpod.live", "http://127.0.0.1:3000"]}
 })
 
 db.init_app(app)
