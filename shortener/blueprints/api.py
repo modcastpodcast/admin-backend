@@ -132,3 +132,15 @@ def all_links():
         links_json.append(data)
 
     return jsonify(links_json)
+
+@api.route("/me")
+@is_authorized
+def get_current_user():
+    """
+    Return token information on the current user.
+    """
+    user = g.api_key.__dict__
+
+    user.pop("_sa_instance_state")
+
+    return jsonify(user)
