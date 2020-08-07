@@ -24,7 +24,7 @@ class RateLimitException(Exception):
 
 
 def upstream_get_user(user_id):
-    if RATELIMITS["users"]["remaining"] == 0:
+    if RATELIMITS["users"].get("remaining") == 0:
         raise RateLimitException(RATELIMITS["users"]["reset_after"])
 
     user = httpx.get(f"{DISCORD_API_BASE}/users/{user_id}", headers={
