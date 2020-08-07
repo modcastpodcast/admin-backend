@@ -39,7 +39,8 @@ def upstream_get_user(user_id):
         raise RateLimitException(RATELIMITS["users"]["reset_after"])
     else:
         user_data = user.json()
-        USER_CACHE[user.id] = user_data
+        user_data["id"] = int(user_data["id"])
+        USER_CACHE[user_data["id"]] = user_data
         return user_data, user.status_code
 
 def get_user(user_id):
