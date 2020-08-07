@@ -251,7 +251,7 @@ def get_all_users():
 @api.route("/admin/tokens")
 @is_authorized
 @is_admin
-def get_all_users():
+def get_all_tokens():
     keys = APIKey.query.filter(APIKey.creator.is_(None)).all()
 
     keys_json = []
