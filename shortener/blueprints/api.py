@@ -267,11 +267,11 @@ def get_all_tokens():
 
     return jsonify(keys_json)
 
-@api.route("/admin/create_token", methods=["POST"])
+@api.route("/admin/create_user", methods=["POST"])
 @is_authorized
 @is_admin
 @is_json
-def create_token():
+def create_user():
     data = request.get_json()
 
     try:
