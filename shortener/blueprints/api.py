@@ -1,12 +1,52 @@
+from collections import defaultdict
 from functools import wraps
+from os import environ
 
+import httpx
 from flask import Blueprint, g, jsonify, request
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityErrorf
+from werkzeug.exceptions import BadRequest
 
 from shortener.models import db, APIKey, ShortURL
 
+DISCORD_API_TOKEN = environ.get("BOT_TOKEN")
+
 api = Blueprint('api', __name__)
 
+RATELIMITS = defaultdict(dict)
+
+USER_CACHE = {}
+
+DISCORD_API_BASE = "https://discord.com/api/v7"
+
+class RateLimitException(Exception):
+    pass
+
+
+def upstream_get_user(user_id):
+    if RATELIMITS["users"]["remaining"] == 0:
+        raise RateLimitException(RATELIMITS["users"]["reset_after"])
+
+    user = httpx.get(f"{DISCORD_API_BASE}/users/{user_id}", headers={
+        "Authorization:" f"Bot {DISCORD_API_TOKEN}"
+    })
+
+    RATELIMITS["users"]["reset_after"] = user.headers["x-ratelimit-reset-after"]
+    RATELIMITS["users"]["remaining"] = user.headers["x-ratelimit-remaining"]
+
+    if user.status_code == 429:
+        # R A T E L I M I T S !
+        raise RateLimitException(RATELIMITS["users"]["reset_after"])
+    else:
+        user_data = user.json()
+        USER_CACHE[user.id] = user_data
+        return user_data, user.status_code
+
+def get_user(user_id):
+    if user := USER_CACHE.get(user_id):
+        return user, 200
+    else:
+        return upstream_get_user(user_id)
 
 def is_authorized(f):
     @wraps(f)
@@ -31,7 +71,7 @@ def is_authorized(f):
 
 def is_json(f):
     @wraps(f)
-    def check_auth(*args, **kwargs):
+    def check_json(*args, **kwargs):
         if content_type := request.headers.get("Content-Type"):
             if content_type.lower() == "application/json":
                 return f(*args, **kwargs)
@@ -46,7 +86,20 @@ def is_json(f):
                 "message": "Set a content type of JSON to interact with the API"
             }), 400
 
-    return check_auth
+    return check_json
+
+def discord_ratelimited(f):
+    @wraps(f)
+    def check_ratelimit(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except RateLimitException as e:
+            return jsonify({
+                "status": "ratelimit",
+                "retry_after": e.args[0]
+            }), 429
+
+    return check_ratelimit
 
 
 @api.route("/create", methods=["POST"])
@@ -144,3 +197,14 @@ def get_current_user():
     user.pop("_sa_instance_state")
 
     return jsonify(user)
+
+@api.route("/user/<int:user_id>")
+def get_user(user_id):
+    """
+    Fetch another user by ID from the Discord API.
+    """
+    try:
+        user_id = int(user_id)
+        return get_user(user_id)
+    except:
+        raise BadRequest()
