@@ -185,7 +185,7 @@ def all_links():
     Return all short URLs and relevant data.
     :return:
     """
-    links = ShortURL.query.order_by(ShortURL.creation_date.desc()).all()
+    links = ShortURL.query.order_by(ShortURL.clicks.desc()).all()
 
     links_json = []
 
@@ -209,7 +209,7 @@ def my_links():
     Return all short URLs and relevant data owned by the current authorized user.
     :return:
     """
-    links = ShortURL.query.order_by(ShortURL.creation_date.desc()).filter_by(creator=g.api_key.creator).all()
+    links = ShortURL.query.order_by(ShortURL.clicks.desc()).filter_by(creator=g.api_key.creator).all()
 
     links_json = []
 
