@@ -4,7 +4,7 @@ from os import environ
 
 import httpx
 from flask import Blueprint, g, jsonify, request
-from sqlalchemy.exc import IntegrityErrorf
+from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import BadRequest
 
 from shortener.models import db, APIKey, ShortURL
