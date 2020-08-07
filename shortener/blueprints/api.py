@@ -202,6 +202,30 @@ def all_links():
 
     return jsonify(links_json)
 
+@api.route("/links/mine")
+@is_authorized
+def my_links():
+    """
+    Return all short URLs and relevant data owned by the current authorized user.
+    :return:
+    """
+    links = ShortURL.query.order_by(ShortURL.creation_date.desc()).filter_by(creator=g.api_key.creator).all()
+
+    links_json = []
+
+    for link in links:
+        data = link.__dict__
+
+        data.pop("_sa_instance_state")
+
+        data["creator"] = str(data["creator"])
+
+        data["creation_date"] = data["creation_date"].timestamp()
+
+        links_json.append(data)
+
+    return jsonify(links_json)
+
 @api.route("/me")
 @is_authorized
 def get_current_user():
