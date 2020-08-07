@@ -80,6 +80,8 @@ def is_admin(f):
                 "message": "You are not an administrator"
             }), 403
 
+    return check_admin
+
 
 def is_json(f):
     @wraps(f)
