@@ -75,11 +75,7 @@ def oauth2_callback():
     user_data = user_data_resp.json()
 
     if user_api_key := APIKey.query.filter_by(creator=int(user_data["id"])).first():
-        return jsonify({
-            "key": user_api_key.key,
-            "is_admin": user_api_key.is_admin,
-            "creator": user_api_key.creator
-        })
+        return redirect(f"https://admin.modpod.live/#/authorize/{user_api_key.key}")
     else:
         raise Unauthorized(
             "While you have authenticated with Discord, your account has not yet been approved by the administrator."
