@@ -229,11 +229,11 @@ def get_user_by_id(user_id):
     except ValueError:
         raise BadRequest()
 
-@api.route("/admin/tokens")
+@api.route("/admin/users")
 @is_authorized
 @is_admin
-def get_all_tokens():
-    keys = APIKey.query.all()
+def get_all_users():
+    keys = APIKey.query.filter(APIKey.creator.isnot(None)).all()
 
     keys_json = []
 
@@ -243,6 +243,25 @@ def get_all_tokens():
         data.pop("_sa_instance_state")
 
         data["creator"] = str(data["creator"])
+
+        keys_json.append(data)
+
+    return jsonify(keys_json)
+
+@api.route("/admin/tokens")
+@is_authorized
+@is_admin
+def get_all_users():
+    keys = APIKey.query.filter(APIKey.creator.is_(None)).all()
+
+    keys_json = []
+
+    for key in keys:
+        data = key.__dict__
+
+        data.pop("_sa_instance_state")
+
+        data.pop("creator")
 
         keys_json.append(data)
 
