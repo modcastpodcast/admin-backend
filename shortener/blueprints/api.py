@@ -208,5 +208,5 @@ def get_user(user_id):
     try:
         user_id = int(user_id)
         return get_user(user_id)
-    except:
+    except ValueError:
         raise BadRequest()
