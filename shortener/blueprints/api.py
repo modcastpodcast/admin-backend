@@ -127,6 +127,8 @@ def all_links():
 
         data.pop("_sa_instance_state")
 
+        data["creation_date"] = data["creation_date"].timestamp()
+
         links_json.append(data)
 
     return jsonify(links_json)
