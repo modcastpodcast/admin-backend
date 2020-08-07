@@ -1,6 +1,7 @@
 from collections import defaultdict
 from functools import wraps
 from os import environ
+from secrets import token_hex
 
 import httpx
 from flask import Blueprint, g, jsonify, request
@@ -244,3 +245,32 @@ def get_all_tokens():
         keys_json.append(data)
 
     return jsonify(keys_json)
+
+@api.route("/admin/create_token", methods=["POST"])
+@is_authorized
+@is_admin
+@is_json
+def create_token():
+    data = request.get_json()
+
+    try:
+        get_user(int(data["creator"]))
+    except:
+        return jsonify({
+            "status": "failure",
+            "message": "Invalid user specified, Discord upstream returned error"
+        })
+
+    new_key = APIKey(
+        key=token_hex(32),
+        is_admin=data["is_admin"],
+        creator=int(data["creator"])
+    )
+
+    db.session.add(new_key)
+    db.session.commit()
+
+    return jsonify({
+        "status": "success",
+        "new_key": new_key.key
+    })
