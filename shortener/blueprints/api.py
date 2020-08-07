@@ -196,7 +196,7 @@ def get_current_user():
 
     user.pop("_sa_instance_state")
 
-    user["creator"] = str(user["cretor"])
+    user["creator"] = str(user["creator"])
 
     return jsonify(user)
 
