@@ -171,7 +171,7 @@ def all_links():
     Return all short URLs and relevant data.
     :return:
     """
-    links = ShortURL.query.all()
+    links = ShortURL.query.order_by(ShortURL.creation_date.desc()).all()
 
     links_json = []
 
