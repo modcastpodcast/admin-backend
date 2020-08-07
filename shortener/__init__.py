@@ -3,6 +3,7 @@ from os import environ
 
 from crawlerdetect import CrawlerDetect
 from flask import Flask, redirect, request
+from flask_cors import CORS
 from werkzeug.exceptions import NotFound
 
 from shortener.blueprints.api import api
@@ -14,6 +15,9 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get("DATABASE_URL")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SECRET_KEY'] = secrets.token_hex(64)
+CORS(app, resources={
+    r"/api/*": {"origins": "https://admin.modpod.live"}
+})
 
 db.init_app(app)
 
