@@ -199,6 +199,8 @@ def get_current_user():
     return jsonify(user)
 
 @api.route("/user/<int:user_id>")
+@is_authorized
+@discord_ratelimited
 def get_user(user_id):
     """
     Fetch another user by ID from the Discord API.
