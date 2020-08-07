@@ -110,3 +110,23 @@ def delete():
             "status": "error",
             "message": "Short code does not exist"
         })
+
+@api.route("/links/all")
+@is_authorized
+def all_links():
+    """
+    Return all short URLs and relevant data.
+    :return:
+    """
+    links = ShortURL.query.all()
+
+    links_json = []
+
+    for link in links:
+        data = link.__dict__
+
+        data.pop("_sa_instance_state")
+
+        links_json.append(data)
+
+    return jsonify(links_json)
