@@ -165,6 +165,12 @@ def delete():
     """
     data = request.get_json()
     if short_url := ShortURL.query.filter_by(short_code=data["short_code"]).first():
+        if g.api_key.creator != short_url.creator and not g.api_key.is_admin:
+            return jsonify({
+                "status": "error",
+                "message": "Permission denied, you do not own this short URL"
+            })
+
         db.session.delete(short_url)
         db.session.commit()
 
