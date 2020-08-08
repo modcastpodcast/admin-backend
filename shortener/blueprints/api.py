@@ -154,6 +154,39 @@ def create():
         "message": "Short code added"
     })
 
+@api.route("/update/<string:short_code>", methods=["PATCH"])
+@is_authorized
+@is_json
+def update(short_code):
+    """
+    Update an existingg short link.
+    """
+    data = request.get_json()
+
+    if short_url := ShortURL.query.filter_by(short_code=short_code).first():
+        if g.api_key.creator != short_url.creator and not g.api_key.is_admin:
+            return jsonify({
+                "status": "error",
+                "message": "Permission denied, you do not own this short URL"
+            })
+
+        short_url.short_code = data.get("short_code", short_url.short_code)
+        short_url.long_url = data.get("long_url", short_url.long_url)
+
+        if g.api_key.is_admin and (new_creator := data.get("creator")):
+            short_url.creator = int(new_creator)
+
+        db.session.add(short_url)
+        db.session.commit()
+
+        return jsonify({
+                "status": "success"
+        })
+    else:
+        return jsonify({
+            "status": "error",
+            "message": "Short code not found"
+        }), 404
 
 @api.route("/delete", methods=["DELETE"])
 @is_authorized
