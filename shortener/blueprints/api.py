@@ -172,6 +172,13 @@ def update(short_code):
                 "message": "Permission denied, you do not own this short URL"
             })
 
+        if short_code != (new_code := data.get("short_code", short_url.short_code)):
+            if ShortURL.query.filter_by(short_code=new_code).first():
+                return jsonify({
+                    "status": "error",
+                    "message": "Short code already exists"
+                }), 400
+
         short_url.short_code = data.get("short_code", short_url.short_code)
         short_url.long_url = data.get("long_url", short_url.long_url)
         short_url.notes = data.get("notes", short_url.notes)
