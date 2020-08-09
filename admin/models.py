@@ -1,14 +1,17 @@
+from os import environ
+
 from datetime import datetime
+from gino import Gino
 
-from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
+db = Gino()
 
 
 class ShortURL(db.Model):
     """
     Model representing a short link on the site.
     """
+    __tablename__ = "short_urls"
+
     short_code = db.Column(db.Text, primary_key=True)
     long_url = db.Column(db.Text, nullable=False)
     creator = db.Column(db.BigInteger, nullable=False)
@@ -21,11 +24,13 @@ class APIKey(db.Model):
     """
     Represents a valid authentication key for the site.
     """
+    __tablename__ = "api_keys"
+
     key = db.Column(db.Text, primary_key=True)
 
     # Administrators can create and delete API keys
-    is_admin = db.Column(db.Boolean, primary_key=True, default=False)
+    is_admin = db.Column(db.Boolean, nullable=False, default=False)
 
     # Optionally API keys can be registered to users for the frontend portal
     # If an API key does not have a creator attached then the key is valid for any user
-    creator = db.Column(db.BigInteger, nullable=True)
+    creator = db.Column(db.BigInteger, nullable=True, unique=True)

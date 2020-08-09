@@ -1,11 +1,7 @@
-flask
-flask_sqlalchemy
+gino
+starlette
 alembic
-gunicorn
-flask_migrate
-psycopg2
-Werkzeug
-SQLAlchemy
-httpx
+git+https://github.com/alokinsoft/starlette-gino.git
 crawlerdetect
-flask-cors
+uvicorn
+nested_dict
