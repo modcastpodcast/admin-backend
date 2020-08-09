@@ -130,13 +130,15 @@ def create():
         new_url = ShortURL(
             short_code=data["short_code"],
             long_url=data["long_url"],
-            creator=data["creator"]
+            creator=data["creator"],
+            notes=data.get("notes", "")
         )
     else:
         new_url = ShortURL(
             short_code=data["short_code"],
             long_url=data["long_url"],
-            creator=g.api_key.creator
+            creator=g.api_key.creator,
+            notes=data.get("notes", "")
         )
 
     db.session.add(new_url)
@@ -159,7 +161,7 @@ def create():
 @is_json
 def update(short_code):
     """
-    Update an existingg short link.
+    Update an existing short link.
     """
     data = request.get_json()
 
@@ -172,6 +174,7 @@ def update(short_code):
 
         short_url.short_code = data.get("short_code", short_url.short_code)
         short_url.long_url = data.get("long_url", short_url.long_url)
+        short_url.notes = data.get("notes", short_url.notes)
 
         if g.api_key.is_admin and (new_creator := data.get("creator")):
             short_url.creator = int(new_creator)

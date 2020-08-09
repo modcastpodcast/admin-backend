@@ -13,6 +13,7 @@ class ShortURL(db.Model):
     long_url = db.Column(db.Text, nullable=False)
     creator = db.Column(db.BigInteger, nullable=False)
     creation_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    notes = db.Column(db.Text, default="")
     clicks = db.Column(db.Integer, nullable=False, default=0)
 
 
