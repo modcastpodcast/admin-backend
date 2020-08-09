@@ -6,3 +6,4 @@ crawlerdetect
 uvicorn
 nested_dict
 itsdangerous
+httpx
