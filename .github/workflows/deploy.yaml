@@ -14,12 +14,12 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Build Docker image
-        run: docker build . --file Dockerfile -t modcastpodcast/link-shortener-backend/backend:${{ github.sha }}
+        run: docker build . --file Dockerfile -t modcastpodcast/admin-backend/backend:${{ github.sha }}
 
       - name: Publish Docker image
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          name: modcastpodcast/link-shortener-backend/backend:${{ github.sha }}
+          name: modcastpodcast/admin-backend/backend:${{ github.sha }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
@@ -42,7 +42,7 @@ jobs:
           namespace: 'default'
           manifests: |
             deployment.yaml
-          images: 'docker.pkg.github.com/modcastpodcast/link-shortener-backend/backend:${{ github.sha }}'
+          images: 'docker.pkg.github.com/modcastpodcast/admin-backend/backend:${{ github.sha }}'
           imagepullsecrets: |
             githubpackage
           kubectl-version: 'latest'

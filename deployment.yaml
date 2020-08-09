@@ -1,33 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: modcast-link-shortener-backend
+  name: modcast-admin-backend
 spec:
   revisionHistoryLimit: 2
   replicas: 1
   selector:
     matchLabels:
-      app: modcast-link-shortener-backend
+      app: modcast-admin-backend
   template:
     metadata:
       labels:
-        app: modcast-link-shortener-backend
+        app: modcast-admin-backend
     spec:
       containers:
-        - name: modcast-link-shortener-backend
-          image: docker.pkg.github.com/modcastpodcast/link-shortener-backend/backend
+        - name: modcast-admin-backend
+          image: docker.pkg.github.com/modcastpodcast/admin-backend/backend
           imagePullPolicy: "IfNotPresent"
           envFrom:
             - secretRef:
-                name: modcast-link-shortener-backend
+                name: modcast-admin-backend
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: modcast-link-shortener-backend
+  name: modcast-admin-backend
 spec:
   selector:
-    app: modcast-link-shortener-backend
+    app: modcast-admin-backend
   ports:
     - protocol: TCP
       port: 80
