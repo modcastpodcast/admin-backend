@@ -160,9 +160,8 @@ class LinkRoute(Route):
             )
 
         if request.state.api_key.is_admin:
-            updates["creator"] = int(data.get("creator", short_url.creator))
-
             try:
+                updates["creator"] = int(data.get("creator", short_url.creator))
                 get_user(updates["creator"])
             except (ValueError, KeyError):
                 return JSONResponse({
