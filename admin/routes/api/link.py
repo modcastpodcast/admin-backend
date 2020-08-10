@@ -4,6 +4,7 @@ from starlette.responses import JSONResponse
 from admin.route import Route
 from admin.models import ShortURL
 from admin.utils import is_authorized, is_json
+from admin.discord_api import get_user
 
 
 class LinkRoute(Route):
@@ -160,6 +161,14 @@ class LinkRoute(Route):
 
         if request.state.api_key.is_admin:
             updates["creator"] = int(data.get("creator", short_url.creator))
+
+            try:
+                get_user(updates["creator"])
+            except ValueError:
+                return JSONResponse({
+                    "status": "error",
+                    "message": "User does not exist"
+                }, status_code=400)
 
         try:
             await short_url.update(**updates).apply()
