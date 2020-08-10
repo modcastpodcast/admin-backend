@@ -26,7 +26,7 @@ class OAuth2Callback(Route):
     path = "/callback"
 
     async def get(self, request):
-        if request.session.get("token", "a") != request.query_params["state"]:
+        if request.session["token"] != request.query_params["state"]:
             return PlainTextResponse("Invalid OAuth2 state returned", 400)
 
         del request.session["token"]
