@@ -14,6 +14,6 @@ class UserInformation(Route):
     @is_authorized
     @discord_ratelimited
     async def get(self, request):
-        user_data = await get_user(request.path_params["user_id"])
+        user_data, response_code = await get_user(request.path_params["user_id"])
 
-        return JSONResponse(user_data)
+        return JSONResponse(user_data, response_code)
