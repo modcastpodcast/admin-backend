@@ -26,7 +26,7 @@ class AdminUserRoute(Route):
         for user in users:
             user_data = user.__dict__["__values__"]
 
-            user_data["creator"] = str(user_data["creator"])
+            user_data.pop("creator")
 
             response.append(user_data)
 

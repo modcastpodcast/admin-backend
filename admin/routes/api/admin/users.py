@@ -28,7 +28,11 @@ class AdminUserRoute(Route):
         response = []
 
         for user in users:
-            response.append(user.__dict__["__values__"])
+            user_data = user.__dict__["__values__"]
+
+            user_data["creator"] = str(user_data["creator"])
+
+            response.append(user_data)
 
         return JSONResponse(response)
 
