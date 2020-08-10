@@ -164,7 +164,7 @@ class LinkRoute(Route):
 
             try:
                 get_user(updates["creator"])
-            except ValueError:
+            except (ValueError, KeyError):
                 return JSONResponse({
                     "status": "error",
                     "message": "User does not exist"
