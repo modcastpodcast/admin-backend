@@ -61,6 +61,8 @@ class CalendarEvent(db.Model):
         default=RepeatConfiguration.ONCE
     )
 
+    creator = db.Column(db.BigInteger, nullable=False)
+
     def to_dict(self) -> dict:
         """
         Serialize the DB model to a dictionary.

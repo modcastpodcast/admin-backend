@@ -1,11 +1,12 @@
 from datetime import date, timedelta
+from uuid import uuid4
 from dateutil.relativedelta import relativedelta
 
 from starlette.responses import JSONResponse
 
 from admin.models import CalendarEvent, RepeatConfiguration
 from admin.route import Route
-from admin.utils import is_authorized
+from admin.utils import is_authorized, is_json
 
 ITERATE_COUNT = 100
 
@@ -72,3 +73,37 @@ class CalendarRoute(Route):
             event["date"] = event["date"].isoformat()
 
         return JSONResponse(returned_events)
+
+    @is_authorized
+    @is_json
+    async def post(self, request):
+        required_params = [
+            "title",
+            "first_date",
+            "repeat_configuration"
+        ]
+
+        data = await request.json()
+
+        for param in required_params:
+            if param not in data:
+                return JSONResponse({
+                    "status": "error",
+                    "message": f"Missing property {param}"
+                })
+
+        event_data = {
+            "id": str(uuid4()),
+            "title": data["title"],
+            "first_date": date.fromisoformat(data["first_date"]),
+            "repeat_configuration": RepeatConfiguration(
+                data["repeat_configuration"]
+            ),
+            "creator": request.state.api_key.creator
+        }
+
+        await CalendarEvent(**event_data).create()
+
+        return JSONResponse({
+            "status": "okay"
+        })
