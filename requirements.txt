@@ -7,5 +7,5 @@ uvicorn
 nested_dict
 itsdangerous
 httpx
-psycopg2
+psycopg2-binary
 asyncpg
