@@ -1,4 +1,4 @@
-from os import environ
+from enum import Enum
 
 from datetime import datetime
 from gino import Gino
@@ -34,3 +34,39 @@ class APIKey(db.Model):
     # Optionally API keys can be registered to users for the frontend portal
     # If an API key does not have a creator attached then the key is valid for any user
     creator = db.Column(db.BigInteger, nullable=True, unique=True)
+
+
+class RepeatConfiguration(Enum):
+    ONCE = 'once'
+    WEEKLY = 'weekly'
+    FORTNIGHTLY = 'fortnightly'
+    MONTHLY = 'monthly'
+
+
+class CalendarEvent(db.Model):
+    """
+    Represents a recurring event within the Modcast calendar.
+    """
+    __tablename__ = "events"
+
+    id = db.Column(db.String, primary_key=True)
+
+    title = db.Column(db.Text, nullable=False)
+
+    first_date = db.Column(db.Date, nullable=False)
+
+    repeat_configuration = db.Column(
+        db.Enum(RepeatConfiguration),
+        nullable=False,
+        default=RepeatConfiguration.ONCE
+    )
+
+
+class CalendarEventAssignments(db.Model):
+    """
+    Represents a user being assigned to a task.
+    """
+    __tablename__ = "assignments"
+
+    event_id = db.Column(db.String, db.ForeignKey("events.id"))
+    user_id = db.Column(db.BigInteger, db.ForeignKey("api_keys.creator"))
