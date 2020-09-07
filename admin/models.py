@@ -71,7 +71,8 @@ class CalendarEvent(db.Model):
             "id": self.id,
             "title": self.title,
             "first_date": self.first_date.isoformat(),
-            "repeat_configuration": self.repeat_configuration.value
+            "repeat_configuration": self.repeat_configuration.value,
+            "creator": str(self.creator)
         }
 
 
