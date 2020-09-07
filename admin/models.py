@@ -61,6 +61,17 @@ class CalendarEvent(db.Model):
         default=RepeatConfiguration.ONCE
     )
 
+    def to_dict(self) -> dict:
+        """
+        Serialize the DB model to a dictionary.
+        """
+        return {
+            "id": self.id,
+            "title": self.title,
+            "first_date": self.first_date.isoformat(),
+            "repeat_configuration": self.repeat_configuration.value
+        }
+
 
 class CalendarEventAssignments(db.Model):
     """
