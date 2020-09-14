@@ -21,7 +21,7 @@ class CalendarRoute(Route):
     Route for fetching, creating, updating and deleting calendar events.
     """
     name = "index"
-    path = ""
+    path = "/?"
 
     @is_authorized
     async def get(self, request):
