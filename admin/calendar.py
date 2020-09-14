@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from icalendar import Calendar, Event
+from icalendar import Calendar, Event, vDate
 
 from admin.models import CalendarEvent, RepeatConfiguration
 
@@ -31,13 +31,9 @@ async def generate_ical():
         ev.add("summary", event.title)
         ev.add("uid", event.id)
 
-        start = datetime.combine(event.first_date, datetime.min.time())
-
-        ev.add("dtstart", start)
+        ev.add("dtstart", vDate(event.first_date))
 
         end = datetime.combine(event.first_date, datetime.max.time())
-
-        ev.add("dtend", end)
         ev.add("dtstamp", end)
 
         if rrule := FREQUENCIES.get(event.repeat_configuration):
