@@ -10,7 +10,7 @@ class ICalRoute(Route):
     Route for returning an iCal representation of the calendar.
     """
     name = "ical"
-    path = "/"
+    path = "/ical"
 
     async def get(self, request):
         authorized = False
