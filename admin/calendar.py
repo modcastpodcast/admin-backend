@@ -22,6 +22,9 @@ async def generate_ical():
     calendar.add("prodid", "-//Modcast Podcast//ModPod Admin 1.0//EN")
     calendar.add("version", "2.0")
 
+    calendar.add("name", "Modcast Podcast")
+    calendar.add("x-wr-calname", "Modcast Podcast")
+
     for event in calendar_events:
         ev = Event()
 
