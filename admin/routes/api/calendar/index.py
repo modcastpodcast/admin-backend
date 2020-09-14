@@ -15,12 +15,13 @@ DAYS = {
     RepeatConfiguration.FORTNIGHTLY: 14
 }
 
+
 class CalendarRoute(Route):
     """
     Route for fetching, creating, updating and deleting calendar events.
     """
-    name = "calendar"
-    path = "/calendar"
+    name = "index"
+    path = "/"
 
     @is_authorized
     async def get(self, request):
@@ -28,7 +29,7 @@ class CalendarRoute(Route):
 
         if to_fetch > 50:
             to_fetch = 50
-        
+
         returned_events = []
 
         calendar_events = await CalendarEvent.query.order_by(
