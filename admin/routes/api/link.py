@@ -1,6 +1,8 @@
 from asyncpg.exceptions import UniqueViolationError
+from starlette.background import BackgroundTask
 from starlette.responses import JSONResponse
 
+from admin.audit_logs import AuditColour, send_audit_log
 from admin.route import Route
 from admin.models import ShortURL
 from admin.utils import is_authorized, is_json
@@ -87,10 +89,23 @@ class LinkRoute(Route):
                 status_code=400
             )
 
+        task = BackgroundTask(
+            send_audit_log,
+            title="New short URL",
+            body=f"Created by <@{request.state.api_key.creator}>",
+            newline_fields={
+                "Short code": data["short_code"],
+                "Long URL": data["long_url"],
+                "Notes": data.get("notes", "*No notes*")
+            },
+            colour=AuditColour.SUCCESS
+        )
+
         return JSONResponse(
             {
                 "status": "success"
-            }
+            },
+            background=task
         )
 
     @is_authorized
@@ -118,9 +133,22 @@ class LinkRoute(Route):
                            "and you do not own this short URL"
             }, status_code=403)
 
+        task = BackgroundTask(
+            send_audit_log,
+            title="Short URL deleted",
+            body=f"Deleted by <@{request.state.api_key.creator}>",
+            newline_fields={
+                "Short code": short_url.short_code,
+                "Long URL": short_url.long_url,
+                "Original creator": f"<@{short_url.creator}>",
+                "Notes": data.get("notes", "*No notes*")
+            },
+            colour=AuditColour.ERROR
+        )
+
         return JSONResponse({
             "status": "success"
-        })
+        }, background=task)
 
     @is_authorized
     @is_json
@@ -159,9 +187,34 @@ class LinkRoute(Route):
                 status_code=400
             )
 
+        task = BackgroundTask(
+            send_audit_log,
+            title="Short URL updated",
+            body=f"Updated by <@{request.state.api_key.creator}>",
+            newline_fields={
+                "Short code": short_url.short_code,
+                "Long URL": short_url.long_url,
+                "Original creator": f"<@{short_url.creator}>",
+                "Notes": data.get("notes", "*No notes*")
+            },
+            colour=AuditColour.BLURPLE
+        )
+
         if request.state.api_key.is_admin:
             try:
                 updates["creator"] = int(data.get("creator", short_url.creator))
+
+                if updates["creator"] != short_url.creator:
+                    task = BackgroundTask(
+                        send_audit_log,
+                        title="Short URL transferred",
+                        body=f"Transferred by <@{request.state.api_key.creator}>",
+                        inline_fields={
+                            "Original creator": f"<@{short_url.creator}>",
+                            "New creator": f"<@{updates['creator']}>",
+                        },
+                        colour=AuditColour.BLURPLE
+                    )
                 get_user(updates["creator"])
             except (ValueError, KeyError):
                 return JSONResponse({
@@ -179,4 +232,4 @@ class LinkRoute(Route):
 
         return JSONResponse({
             "status": "success"
-        })
+        }, background=task)
