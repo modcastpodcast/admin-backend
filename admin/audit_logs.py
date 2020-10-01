@@ -31,7 +31,7 @@ async def send_audit_log(
     async with httpx.AsyncClient() as client:
         resp = await client.post(WEBHOOK_URL, json={
             "username": "Modcast Podcast Admin",
-            "icon_url": "https://cdn.discordapp.com/team-icons/755212236242288640/69496a2e8be6eccfee1fbc0fce476ae8.png",
+            "avatar_url": "https://cdn.discordapp.com/team-icons/755212236242288640/69496a2e8be6eccfee1fbc0fce476ae8.png",
             "embeds": [{
                 "title": title,
                 "description": body,
