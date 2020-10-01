@@ -2,8 +2,10 @@ from datetime import date, timedelta
 from uuid import uuid4
 from dateutil.relativedelta import relativedelta
 
+from starlette.background import BackgroundTask
 from starlette.responses import JSONResponse
 
+from admin.audit_logs import send_audit_log, AuditColour
 from admin.models import CalendarEvent, RepeatConfiguration
 from admin.route import Route
 from admin.utils import is_authorized, is_json
@@ -103,8 +105,20 @@ class CalendarRoute(Route):
             "creator": request.state.api_key.creator
         }
 
+        task = BackgroundTask(
+            send_audit_log,
+            title="New calendar event",
+            body=f"Created by <@{request.state.api_key.creator}>",
+            newline_fields={
+                "Title": data["title"],
+                "First date": data["first_date"],
+                "Repeat configuration": event_data["repeat_configuration"].value.title()
+            },
+            colour=AuditColour.SUCCESS
+        )
+
         await CalendarEvent(**event_data).create()
 
         return JSONResponse({
             "status": "okay"
-        })
+        }, background=task)
