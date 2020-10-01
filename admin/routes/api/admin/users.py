@@ -1,8 +1,10 @@
 import secrets
 
+from starlette.background import BackgroundTask
 from asyncpg.exceptions import UniqueViolationError
 from starlette.responses import JSONResponse
 
+from admin.audit_logs import send_audit_log, AuditColour
 from admin.discord_api import get_user
 from admin.route import Route
 from admin.models import APIKey
@@ -64,7 +66,18 @@ class AdminUserRoute(Route):
                 "message": "Users can only have one API key per Discord ID"
             }, status_code=400)
 
+        task = BackgroundTask(
+            send_audit_log,
+            title="New user added",
+            body=f"Added by <@{request.state.api_key.creator}>",
+            inline_fields={
+                "User": f"<@{data['creator']}>",
+                "Administrator": data["is_admin"]
+            },
+            colour=AuditColour.SUCCESS
+        )
+
         return JSONResponse({
             "status": "success",
             "new_key": new_key.key
-        })
+        }, background=task)

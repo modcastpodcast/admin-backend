@@ -111,6 +111,8 @@ class CalendarRoute(Route):
             body=f"Created by <@{request.state.api_key.creator}>",
             newline_fields={
                 "Title": data["title"],
+            },
+            inline_fields={
                 "First date": data["first_date"],
                 "Repeat configuration": event_data["repeat_configuration"].value.title()
             },
