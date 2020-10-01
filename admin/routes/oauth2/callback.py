@@ -1,8 +1,10 @@
 from os import environ
 
 import httpx
+from starlette.background import BackgroundTask
 from starlette.responses import RedirectResponse, PlainTextResponse
 
+from admin.audit_logs import send_audit_log, AuditColour
 from admin.route import Route
 from admin.models import APIKey
 
@@ -60,8 +62,20 @@ class OAuth2Callback(Route):
         user_api_key = await APIKey.query.where(APIKey.creator == int(user_data["id"])).gino.first()
 
         if user_api_key:
-            return RedirectResponse(f"{ADMIN_FRONTEND}#/authorize/{user_api_key.key}")
+            task = BackgroundTask(
+                send_audit_log,
+                title="Successful authentication",
+                body=f"Authentication from <@{user_data['id']}>",
+                colour=AuditColour.SUCCESS
+            )
+            return RedirectResponse(f"{ADMIN_FRONTEND}#/authorize/{user_api_key.key}", background=task)
         else:
+            task = BackgroundTask(
+                send_audit_log,
+                title="Failed authentication",
+                body=f"Authentication from <@{user_data['id']}>",
+                colour=AuditColour.ERROR
+            )
             raise PlainTextResponse(
                 "While you have authenticated with Discord, your account has not yet been approved by the administrator."
                 " Please get in touch with the Modcast tech team to approve your access to the application.",
