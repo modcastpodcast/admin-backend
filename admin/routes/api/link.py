@@ -141,7 +141,7 @@ class LinkRoute(Route):
                 "Short code": short_url.short_code,
                 "Long URL": short_url.long_url,
                 "Original creator": f"<@{short_url.creator}>",
-                "Notes": data.get("notes", "*No notes*")
+                "Notes": short_url.notes
             },
             colour=AuditColour.ERROR
         )
