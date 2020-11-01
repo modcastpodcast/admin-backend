@@ -55,8 +55,6 @@ class CalendarEvent(db.Model):
 
     first_date = db.Column(db.Date, nullable=False)
 
-    duration_days = db.Column(db.Integer, default=0)
-
     repeat_configuration = db.Column(
         db.Enum(RepeatConfiguration),
         nullable=False,
