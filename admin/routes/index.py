@@ -11,6 +11,6 @@ class Index(Route):
 
     async def get(self, request):
         """
-        Redirect to modcast.network.
+        Permanently redirect requests to modcast.network.
         """
         return RedirectResponse("https://modcast.network", 301)
