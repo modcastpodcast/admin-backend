@@ -1,6 +1,6 @@
 FROM python:alpine
 
-RUN apk add postgresql-libs
+RUN apk add postgresql-libs git
 RUN apk add --virtual .build-deps gcc musl-dev postgresql-dev
 
 WORKDIR /app
