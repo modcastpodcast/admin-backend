@@ -1,5 +1,7 @@
 FROM python:alpine
 
+RUN apk add git
+
 WORKDIR /app
 COPY . .
 
