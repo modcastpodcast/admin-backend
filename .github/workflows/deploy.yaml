@@ -17,7 +17,7 @@ jobs:
         run: docker build . --file Dockerfile -t modcastpodcast/admin-backend/backend:${{ github.sha }}
 
       - name: Publish Docker image
-        uses: elgohr/Publish-Docker-Github-Action@master
+        uses: elgohr/Publish-Docker-Github-Action@v5
         with:
           name: modcastpodcast/admin-backend/backend:${{ github.sha }}
           username: ${{ github.actor }}
